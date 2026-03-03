@@ -1,0 +1,5 @@
+# VSCode workspace
+*.code-workspace
+# System files
+.DS_Store
+Thumbs.db
