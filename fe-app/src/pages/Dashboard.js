@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 
-export default function Dashboard({ token }) {
+export default function Dashboard({ token, setToken }) {
     const [goods, setGoods] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -118,6 +118,26 @@ export default function Dashboard({ token }) {
             alert("Xóa thất bại");
         }
     };
+    const handleLogout = async () => {
+        if (!window.confirm("Bạn chắc chắn muốn đăng xuất?")) return;
+
+        try {
+            await api.post(
+                "/logout",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+        } catch (err) {
+            console.log(err);
+        }
+
+        localStorage.removeItem("token");
+        setToken(null);
+    };
 
     return (
         <div style={styles.page}>
@@ -125,7 +145,13 @@ export default function Dashboard({ token }) {
                 <div style={styles.header}>
                     <div>
                         <p style={styles.badge}>Hệ thống quản lý</p>
-                        <h1 style={styles.title}>Quản lý hàng hóa</h1>
+                        <div style={styles.header}>
+                            <h1 style={{ color: "#fff" }}>📦 Quản Lý Hàng Hóa</h1>
+
+                            <button style={styles.logoutBtn} onClick={handleLogout}>
+                                🚪 Đăng xuất
+                            </button>
+                        </div>
                         <p style={styles.subtitle}>
                             Theo dõi danh sách, số lượng và giá hàng hóa một cách
                             trực quan.
@@ -316,14 +342,7 @@ const styles = {
         maxWidth: 1200,
         margin: "0 auto",
     },
-    header: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-        gap: 20,
-        flexWrap: "wrap",
-        marginBottom: 28,
-    },
+
     badge: {
         display: "inline-block",
         margin: 0,
@@ -571,5 +590,22 @@ const styles = {
         marginTop: 8,
         fontSize: 14,
         color: "#64748b",
+    },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 30,
+    },
+
+    logoutBtn: {
+        padding: "8px 14px",
+        background: "#ff4d4f",
+        color: "#fff",
+        border: "none",
+        borderRadius: 6,
+        cursor: "pointer",
+        fontWeight: "bold",
+        margin: "0px 50px"
     },
 };
